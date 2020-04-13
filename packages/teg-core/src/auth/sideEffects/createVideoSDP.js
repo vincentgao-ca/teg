@@ -12,6 +12,10 @@ const createVideoSDP = async (source, args, context) => {
       ) {
         type
         sdp
+        candidates {
+          candidate
+          sdpMLineIndex
+        }
       }
     }
   `

@@ -32,6 +32,12 @@ input RTCSignalInput {
 type RTCSignal {
   type: String!
   sdp: String!
+  candidates: [ICECandidate!]!
+}
+
+type ICECandidate {
+  candidate: String!
+  sdpMLineIndex: Int!
 }
 
 # Invite

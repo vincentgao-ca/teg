@@ -7,6 +7,7 @@ use gst::prelude::*;
 use async_std::task;
 use futures::stream::StreamExt;
 use futures::future::FutureExt;
+use futures::channel::mpsc;
 
 use anyhow::{anyhow, bail, Context};
 
@@ -43,10 +44,18 @@ macro_rules! upgrade_weak {
 }
 
 #[derive(juniper::GraphQLObject, Debug, Serialize, Deserialize)]
+pub struct IceCandidate {
+    pub candidate: String,
+    #[graphql(name = "sdpMLineIndex")]
+    pub sdp_mline_index: i32,
+}
+
+#[derive(juniper::GraphQLObject, Debug, Serialize, Deserialize)]
 pub struct RTCSignal {
     #[graphql(name = "type")]
     pub sdp_type: String,
     pub sdp: String,
+    pub candidates: Vec<IceCandidate>,
 }
 
 #[derive(juniper::GraphQLInputObject, Debug, Serialize, Deserialize)]
@@ -57,7 +66,7 @@ pub struct RTCSignalInput {
 }
 
 pub async fn create_video_sdp(
-    context: &crate::Context,
+    _context: &crate::Context,
     offer: RTCSignalInput,
 ) -> FieldResult<RTCSignal> {
     // Initialize GStreamer first
@@ -68,7 +77,7 @@ pub async fn create_video_sdp(
         .map_err(|err| format!("check_plugins(): {:?}", err))?;
 
     // Create our application state
-    let (app, send_gst_msg_rx) = App::new()
+    let (app, send_gst_msg_rx, ice_candidate_rx) = App::new()
         .await
         .map_err(|err| format!("Unable to start video provider: {:?}", err))?;
 
@@ -106,10 +115,14 @@ pub async fn create_video_sdp(
         Ok(answer)
     };
 
-    let answer = futures::select!{
+    let mut answer = futures::select!{
         answer = sdp_handler.fuse() => answer,
         _ = pipeline_message_handler.fuse() => Err("Unexpected pipeline message handler exit".to_string()),
     }?;
+
+    answer.candidates = ice_candidate_rx
+        .collect()
+        .await;
 
     Ok(answer)
 }
@@ -127,6 +140,7 @@ struct AppWeak(Weak<AppInner>);
 pub struct AppInner {
     pipeline: gst::Pipeline,
     webrtcbin: gst::Element,
+    ice_candidate_tx: mpsc::UnboundedSender<IceCandidate>,
 }
 
 // To be able to access the App's fields directly
@@ -156,6 +170,7 @@ impl App {
         (
             Self,
             impl Stream<Item = gst::Message>,
+            mpsc::UnboundedReceiver<IceCandidate>,
         ),
         anyhow::Error,
     > {
@@ -171,6 +186,8 @@ impl App {
             //  audiotestsrc is-live=true volume=0 ! opusenc ! rtpopuspay pt=97 ! webrtcbin. \
             //  webrtcbin name=webrtcbin"
         )?;
+
+        let (ice_candidate_tx, ice_candidate_rx) = mpsc::unbounded::<IceCandidate>();
 
         // Downcast from gst::Element to gst::Pipeline
         let pipeline = pipeline
@@ -202,6 +219,7 @@ impl App {
         let app = App(Arc::new(AppInner {
             pipeline,
             webrtcbin,
+            ice_candidate_tx,
         }));
 
         // Asynchronously set the pipeline to Playing
@@ -241,7 +259,7 @@ impl App {
             })
             .unwrap();
 
-        Ok((app, send_gst_msg_rx))
+        Ok((app, send_gst_msg_rx, ice_candidate_rx))
     }
 
     // Handle GStreamer messages coming from the pipeline
@@ -270,18 +288,16 @@ impl App {
     // Asynchronously send ICE candidates to the peer via the WebSocket connection as a JSON
     // message
     fn on_ice_candidate(&self, mlineindex: u32, candidate: String) -> Result<(), anyhow::Error> {
-        // let message = serde_json::to_string(&JsonMsg::Ice {
-        //     candidate,
-        //     sdp_mline_index: mlineindex,
-        // })
-        // .unwrap();
-
         info!("ICE Candidate ({:?}): {:?}", mlineindex, candidate);
-        // self.send_msg_tx
-        //     .lock()
-        //     .unwrap()
-        //     .unbounded_send(WsMessage::Text(message))
-        //     .with_context(|| format!("Failed to send ICE candidate"))?;
+
+        let message = IceCandidate {
+            candidate,
+            sdp_mline_index: mlineindex as i32,
+        };
+
+        self.ice_candidate_tx
+            .unbounded_send(message)
+            .with_context(|| format!("Failed to send ICE candidate"))?;
 
         Ok(())
     }
@@ -298,8 +314,6 @@ impl App {
         info!("ICE Gathering State: {:?}", val);
 
         if let gst_webrtc::WebRTCICEGatheringState::Complete = val {
-            use async_std::task;
-
             let app_clone = self.clone();
 
             task::spawn(async move {
@@ -348,6 +362,7 @@ impl App {
         let answer_signal = RTCSignal {
             sdp_type: "answer".to_string(),
             sdp,
+            candidates: vec![],
         };
 
         Ok(answer_signal)

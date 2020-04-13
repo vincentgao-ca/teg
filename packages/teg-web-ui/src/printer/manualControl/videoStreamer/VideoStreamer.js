@@ -23,6 +23,10 @@ const createVideoSDPMutation = gql`
     createVideoSDP(offer: $offer) {
       type
       sdp
+      candidates {
+        candidate
+        sdpMLineIndex
+      }
     }
   }
 `
