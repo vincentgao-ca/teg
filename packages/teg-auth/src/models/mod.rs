@@ -1,6 +1,6 @@
 mod user;
 mod invite;
-mod video;
+pub mod video;
 
 pub use user::*;
 pub use invite::*;

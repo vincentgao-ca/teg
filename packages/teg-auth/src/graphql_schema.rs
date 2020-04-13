@@ -18,8 +18,8 @@ use crate::models::{
     DeleteInvite,
     ConsumeInvite,
     create_video_sdp,
-    RTCSessionDescription,
-    RTCSessionDescriptionInput,
+    RTCSignal,
+    RTCSignalInput,
 };
 
 use crate::Context;
@@ -100,7 +100,7 @@ impl Mutation {
     #[graphql(
         name = "createVideoSDP",
     )]
-    fn create_video_sdp(context: &Context, offer: RTCSessionDescriptionInput) -> FieldResult<RTCSessionDescription> {
+    fn create_video_sdp(context: &Context, offer: RTCSignalInput) -> FieldResult<RTCSignal> {
         task::block_on(
             create_video_sdp(context, offer)
         )

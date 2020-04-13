@@ -13,7 +13,12 @@ juniper_warp = "0.5.2"
 warp = "0.1.20"
 log = "0.4.8"
 env_logger = "0.7.1"
+
 serde = { version = "1.0.104", features = ["derive"] }
+serde_derive = "1"
+rmp-serde = "0.14.0"
+serde_json = "1.0.44"
+
 reqwest = { version = "0.10.1", features = ["blocking", "json", "rustls-tls"], default-features = false }
 sqlx = { git = "https://github.com/JesperAxelsson/sqlx", branch="feature/cargo-sqlx-migrate", features = ["postgres", "chrono"] }
 # sqlx = { version = "0.3.0-alpha.2", features = ["postgres", "chrono"] }
@@ -22,9 +27,6 @@ async-std = { version = "1.4.0", features = ["attributes"] }
 futures = "0.3.1"
 chrono = "0.4.10"
 secp256k1 = { version = "0.17.2", features = ["rand"] }
-rand = "0.5.6"
-rmp-serde = "0.14.0"
-serde_json = "1.0.44"
 data-encoding = "2.1.2"
 toml = "0.5.6"
 qr2term = "0.1.7"
@@ -34,3 +36,11 @@ url = "2.1.1"
 openssl = { version = "0.10.28", features = ["vendored"] }
 error-chain = "0.12.1"
 frank_jwt = "3.1.2"
+
+structopt = { version = "0.3", default-features = false }
+anyhow = "1"
+rand = "0.7"
+async-tungstenite = { version = "0.4", features = ["async-std-runtime", "async-native-tls"] }
+gst = { package = "gstreamer", version = "0.15", features = ["v1_14"] }
+gst-webrtc = { package = "gstreamer-webrtc", version = "0.15" }
+gst-sdp = { package = "gstreamer-sdp", version = "0.15", features = ["v1_14"] }

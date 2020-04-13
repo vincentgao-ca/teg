@@ -125,6 +125,31 @@ async fn main() -> Result<()> {
 
     task::spawn(firebase_refresh_task);
 
+    // Video Streaming
+
+    // // Initialize GStreamer first
+    // gst::init()
+    //     .map_err(|err| format!("gst::init(): {:?}", err))?;
+    //
+    // crate::models::video::check_plugins()
+    //     .map_err(|err| format!("check_plugins(): {:?}", err))?;
+    //
+    // // Create our application state
+    // let (video, send_gst_msg_rx) = models::video::App::new()
+    //     .await
+    //     .map_err(|err| format!("Unable to start video provider: {:?}", err))?;
+    //
+    // let video_clone = video.clone();
+    //
+    // task::spawn(async move {
+    //     let mut send_gst_msg_rx = send_gst_msg_rx.fuse();
+    //     loop {
+    //         // Pass the GStreamer messages to the application control logic
+    //         let gst_msg = send_gst_msg_rx.select_next_some().await;
+    //         let _ = video_clone.handle_pipeline_message(&gst_msg)
+    //             .expect("Pipeline Error");
+    //     }
+    // });
 
     // State
     let state = warp::any()
@@ -135,6 +160,7 @@ async fn main() -> Result<()> {
                     Arc::clone(&pool),
                     user_id,
                     Arc::clone(&pem_keys_lock),
+                    // video.clone(),
                 )
             ).map_err(|err| {
                 warp::reject::custom(err)

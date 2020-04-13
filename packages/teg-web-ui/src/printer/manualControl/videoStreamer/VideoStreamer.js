@@ -19,7 +19,7 @@ import SimplePeer from 'simple-peer'
 import LoadingOverlay from '../../../common/LoadingOverlay'
 
 const createVideoSDPMutation = gql`
-  mutation createVideoSDPMutation($offer: RTCSessionDescriptionInput!) {
+  mutation createVideoSDPMutation($offer: RTCSignalInput!) {
     createVideoSDP(offer: $offer) {
       type
       sdp
@@ -47,14 +47,30 @@ const enhance = Component => (props) => {
 
   const loadVideo = useCallback(async () => {
     const mediaConstraints = {
-      offerToReceiveAudio: false,
+      // offerToReceiveAudio: true,
       offerToReceiveVideo: true,
+      offerToReceiveAudio: false,
+      // offerToReceiveVideo: false,
     }
 
+    // let streamOut = await navigator.mediaDevices.getUserMedia({
+    //   video: true,
+    //   audio: true
+    // })
+    // console.log({ streamOut })
+
     const p = new SimplePeer({
+      // stream: streamOut,
       initiator: true,
       trickle: false,
       offerOptions: mediaConstraints,
+      config: {
+        iceServers: [
+          {
+            urls: 'stun:global.stun.twilio.com:3478?transport=udp'
+          },
+        ],
+      }
     })
 
     p.on('error', err => setPeerError(err))
@@ -69,7 +85,7 @@ const enhance = Component => (props) => {
       },
     })
 
-    // console.log('answer', data.createVideoSDP)
+    console.log('answer', data.createVideoSDP)
     p.signal(data.createVideoSDP)
 
     p.on('connect', () => {
@@ -86,7 +102,11 @@ const enhance = Component => (props) => {
       videoEl.current.src = window.URL.createObjectURL(stream) // for older browsers
     }
 
-    videoEl.current.play()
+    try {
+      videoEl.current.play()
+    } catch (e) {
+      console.error(e)
+    }
   }, [])
 
   const { isLoading, error } = useAsync({
@@ -120,6 +140,7 @@ const VideoStreamer = ({
         <video
           ref={videoEl}
           className={classes.video}
+          controls="controls"
         >
         </video>
       </div>

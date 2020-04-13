@@ -20,16 +20,16 @@ extend type Mutation {
 
   deleteCurrentUser: Boolean
 
-  createVideoSDP(offer: RTCSessionDescriptionInput!): RTCSessionDescription!
+  createVideoSDP(offer: RTCSignalInput!): RTCSignal!
 }
 
 # Video
-input RTCSessionDescriptionInput {
+input RTCSignalInput {
   type: String!
   sdp: String!
 }
 
-type RTCSessionDescription {
+type RTCSignal {
   type: String!
   sdp: String!
 }
