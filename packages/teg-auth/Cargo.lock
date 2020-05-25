@@ -156,12 +156,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b41b7ea54a0c9d92199de89e20e58d49f02f8e699814ef3fdf266f6f748d15c7"
 
 [[package]]
-name = "base64"
-version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d5ca2cd0adc3f48f9e9ea5a6bbdf9ccc0bfade884847e484d452414c7ccffb3"
-
-[[package]]
 name = "bitflags"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -381,16 +375,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "057b7146d02fb50175fd7dbe5158f6097f33d02831f43b4ee8ae4ddf67b68f5c"
 dependencies = [
  "winapi 0.3.8",
-]
-
-[[package]]
-name = "crypto-mac"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4434400df11d95d556bac068ddfedd482915eb18fe8bea89bc80b6e4b1c179e5"
-dependencies = [
- "generic-array",
- "subtle",
 ]
 
 [[package]]
@@ -823,6 +807,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "heck"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "20564e78d53d2bb135c343b3f47714a56af2061f1c928fdb541dc7b9fdd94205"
+dependencies = [
+ "unicode-segmentation",
+]
+
+[[package]]
 name = "hermit-abi"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -836,16 +829,6 @@ name = "hex"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "644f9158b2f133fd50f5fb3242878846d9eb792e445c893805ff0e3824006e35"
-
-[[package]]
-name = "hmac"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5dcb5e64cda4c23119ab41ba960d1e170a774c8e4b9d9e6a9bc18aabf5e59695"
-dependencies = [
- "crypto-mac",
- "digest",
-]
 
 [[package]]
 name = "http"
@@ -1150,6 +1133,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dea0c0405123bba743ee3f91f49b1c7cfb684eef0da0a50110f758ccf24cdff0"
 
 [[package]]
+name = "libsqlite3-sys"
+version = "0.17.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56d90181c2904c287e5390186be820e5ef311a3c62edebb7d6ca3d6a48ce041d"
+dependencies = [
+ "cc",
+ "pkg-config",
+ "vcpkg",
+]
+
+[[package]]
 name = "lock_api"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1187,6 +1181,12 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "maplit"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
 
 [[package]]
 name = "matches"
@@ -2147,18 +2147,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sha2"
-version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27044adfd2e1f077f649f59deb9490d3941d674002f7d062870a60ebe9bd47a0"
-dependencies = [
- "block-buffer",
- "digest",
- "fake-simd",
- "opaque-debug",
-]
-
-[[package]]
 name = "signal-hook"
 version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2213,9 +2201,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
 
 [[package]]
+name = "sqlformat"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5ce64a4576e1720a2e511bf3ccdb8c0f6cfed0fc265bcbaa0bd369485e02c631"
+dependencies = [
+ "lazy_static",
+ "maplit",
+ "regex",
+]
+
+[[package]]
 name = "sqlx"
-version = "0.3.0-alpha.2"
-source = "git+https://github.com/JesperAxelsson/sqlx?branch=feature/cargo-sqlx-migrate#fcd6ef43a406d243c878a59d4dd9801766272542"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8974cacd80085fbe49e778708d660dec6fb351604dc34c3905b26efb2803b038"
 dependencies = [
  "sqlx-core",
  "sqlx-macros",
@@ -2223,13 +2223,13 @@ dependencies = [
 
 [[package]]
 name = "sqlx-core"
-version = "0.3.0-alpha.2"
-source = "git+https://github.com/JesperAxelsson/sqlx?branch=feature/cargo-sqlx-migrate#fcd6ef43a406d243c878a59d4dd9801766272542"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "88ac5a436f941c42eac509471a730df5c3c58e1450e68cd39afedbd948206273"
 dependencies = [
  "async-native-tls",
  "async-std",
  "async-stream",
- "base64 0.12.0",
  "bitflags",
  "byteorder",
  "chrono",
@@ -2239,26 +2239,25 @@ dependencies = [
  "futures-core",
  "futures-util",
  "hex",
- "hmac",
  "libc",
+ "libsqlite3-sys",
  "log 0.4.8",
- "md-5",
  "memchr",
  "percent-encoding 2.1.0",
- "rand 0.7.3",
- "sha-1",
- "sha2",
+ "sqlformat",
  "url 2.1.1",
 ]
 
 [[package]]
 name = "sqlx-macros"
-version = "0.3.0-alpha.2"
-source = "git+https://github.com/JesperAxelsson/sqlx?branch=feature/cargo-sqlx-migrate#fcd6ef43a406d243c878a59d4dd9801766272542"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "de2ae78b783af5922d811b14665a5a3755e531c3087bb805cf24cf71f15e6780"
 dependencies = [
  "async-std",
  "dotenv",
  "futures 0.3.4",
+ "heck",
  "proc-macro2",
  "quote",
  "sqlx-core",
@@ -2280,12 +2279,6 @@ name = "strsim"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6446ced80d6c486436db5c078dde11a9f73d42b57fb273121e160b84f63d894c"
-
-[[package]]
-name = "subtle"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d67a5a62ba6e01cb2192ff309324cb4875d0c451d55fe2319433abe7a05a8ee"
 
 [[package]]
 name = "syn"
@@ -2733,6 +2726,12 @@ checksum = "5479532badd04e128284890390c1e876ef7a993d0570b3597ae43dfa1d59afa4"
 dependencies = [
  "smallvec 1.2.0",
 ]
+
+[[package]]
+name = "unicode-segmentation"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e83e153d1053cbb5a118eeff7fd5be06ed99153f00dbcd8ae310c5fb2b22edc0"
 
 [[package]]
 name = "unicode-xid"

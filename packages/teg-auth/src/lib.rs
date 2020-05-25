@@ -83,8 +83,8 @@ pub async fn init() -> crate::Result<Context> {
 
         // use diesel::prelude::*;
         //
-        // let database_url = env::var("POSTGRESQL_ADDON_URI")
-        //     .expect("POSTGRESQL_ADDON_URI must be set");
+        // let database_url = env::var("DATABASE_URL")
+        //     .expect("DATABASE_URL must be set");
         //
         // let connection = PgConnection::establish(&database_url)
         //     .expect(&format!("Error connecting to {}", database_url));
@@ -103,13 +103,13 @@ pub async fn init() -> crate::Result<Context> {
         return Err("TODO: Migration not yet implemented".into())
     }
 
-    let database_url = env::var("POSTGRESQL_ADDON_URI")
-        .expect("$POSTGRESQL_ADDON_URI must be set");
+    let database_url = env::var("DATABASE_URL")
+        .expect("$DATABASE_URL must be set");
 
-    let pool = sqlx::PgPool::new(&database_url)
+    let pool = sqlx::SqlitePool::new(&database_url)
         .await
         .map(|p| Arc::new(p))
-        .expect("Could not connect to Postgres");
+        .expect("Could not connect to Sqlite");
 
     models::Invite::generate_or_display_initial_invite(
         Arc::clone(&pool)

@@ -20,7 +20,7 @@ For completeness this documentation lists all the dependencies to get a developm
 z
 1. Install [nvm](https://github.com/creationix/nvm)
 2. Install [Rust](https://rustup.rs/)
-3. `sudo apt update && sudo apt install build-essential pkg-config python libssl-dev postgresql libpq-dev tmux qemu qemu-user qemu-user-static binutils-arm-linux-gnueabihf gcc-arm-linux-gnueabihf fuse-overlayfs`
+3. `sudo apt update && sudo apt install build-essential pkg-config python libssl-dev libsqlite3-dev sqlite3 tmux qemu qemu-user qemu-user-static binutils-arm-linux-gnueabihf gcc-arm-linux-gnueabihf fuse-overlayfs`
 4. Enable Passwordless local logins in Postgres: https://gist.github.com/p1nox/4953113
 5. Allow serial port access via the dialout group and then log out and back in: `sudo gpasswd --add ${USER} dialout`
 6. Increase the max_user_watches: `echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`

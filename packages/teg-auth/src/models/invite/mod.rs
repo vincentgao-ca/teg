@@ -86,7 +86,7 @@ impl Invite {
     }
 
     pub async fn generate_and_display(
-        pool: Arc<sqlx::PgPool>,
+        pool: Arc<sqlx::SqlitePool>,
         is_admin: bool,
     ) -> FieldResult<Self> {
         let mut db = pool.acquire().await?;
@@ -98,7 +98,7 @@ impl Invite {
     }
 
     pub async fn generate_or_display_initial_invite(
-        pool: Arc<sqlx::PgPool>,
+        pool: Arc<sqlx::SqlitePool>,
     ) -> FieldResult<()> {
         let mut db = pool.acquire().await?;
 
@@ -135,7 +135,7 @@ impl Invite {
     }
 
     pub async fn new(
-        db: &mut sqlx::pool::PoolConnection<sqlx::PgConnection>,
+        db: &mut sqlx::pool::PoolConnection<sqlx::SqliteConnection>,
         is_admin: bool,
     ) -> FieldResult<Invite> {
         use secp256k1::{

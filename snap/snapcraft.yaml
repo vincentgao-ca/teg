@@ -90,12 +90,14 @@ parts:
           # - "sqlite3:armhf"
         - postgresql:armhf
         - libpq-dev:armhf
-        - postgresql-client:armhf
+        - libsqlite3-dev:armhf
+        - sqlite3:armhf
       - else:
         # - "sqlite3"
         - postgresql
         - libpq-dev
-        - postgresql-client
+        - libsqlite3-dev
+        - sqlite3
 
   # https://snapcraft.io/blog/the-smart-dump-plugin
   webrtc-streamer:
@@ -157,8 +159,7 @@ apps:
     environment:
       RUST_ENV: production
       RUST_BACKTRACE: 1
-      POSTGRESQL_ADDON_URI: postgres://postgres@localhost/teg
-      DATABASE_URL: postgres://postgres@localhost/teg
+      DATABASE_URL: sqlite:///etc/teg/database.db
       FIREBASE_PROJECT_ID: tegapp-dev
       PORT: 33005
       RUST_LOG: INFO
@@ -167,8 +168,7 @@ apps:
     environment:
       RUST_ENV: production
       RUST_BACKTRACE: 1
-      POSTGRESQL_ADDON_URI: postgres://postgres@localhost/teg
-      DATABASE_URL: postgres://postgres@localhost/teg
+      DATABASE_URL: sqlite:///etc/teg/database.db
       FIREBASE_PROJECT_ID: tegapp-dev
       PORT: 33005
       RUST_LOG: INFO

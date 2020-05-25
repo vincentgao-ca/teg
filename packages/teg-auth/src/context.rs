@@ -8,7 +8,7 @@ use crate::configuration::Config;
 type SqlxError = sqlx::Error;
 
 pub struct Context {
-    pub pool: Arc<sqlx::PgPool>,
+    pub pool: Arc<sqlx::SqlitePool>,
     pub current_user: Option<User>,
     pub identity_public_key: Option<String>,
     pub auth_pem_keys: Arc<RwLock<Vec<Vec<u8>>>>,
@@ -20,7 +20,7 @@ impl juniper::Context for Context {}
 
 impl Context {
     pub async fn new(
-        pool: Arc<sqlx::PgPool>,
+        pool: Arc<sqlx::SqlitePool>,
         current_user_id: Option<i32>,
         identity_public_key: Option<String>,
         auth_pem_keys: Arc<RwLock<Vec<Vec<u8>>>>,
@@ -49,13 +49,13 @@ impl Context {
 
     pub async fn db(
         &self
-    ) -> sqlx::Result<sqlx::pool::PoolConnection<sqlx::PgConnection>> {
+    ) -> sqlx::Result<sqlx::pool::PoolConnection<sqlx::SqliteConnection>> {
         self.pool.acquire().await
     }
 
     pub async fn tx(
         &self
-    ) -> sqlx::Result<sqlx::Transaction<sqlx::pool::PoolConnection<sqlx::PgConnection>>> {
+    ) -> sqlx::Result<sqlx::Transaction<sqlx::pool::PoolConnection<sqlx::SqliteConnection>>> {
         self.pool.begin().await
     }
 
