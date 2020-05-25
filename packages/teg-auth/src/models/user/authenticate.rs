@@ -26,7 +26,7 @@ impl User {
         let mut db = context.db().await?;
 
         let invite = sqlx::query!(
-            "SELECT id FROM invites WHERE public_key=$1",
+            "SELECT id FROM invites WHERE public_key=?",
             identity_public_key
         )
             .fetch_optional(&mut db)
@@ -35,7 +35,7 @@ impl User {
 
         if invite.is_none() {
             let user = sqlx::query!(
-                "SELECT id FROM users WHERE firebase_uid=$1 AND is_authorized=True",
+                "SELECT id FROM users WHERE firebase_uid=? AND is_authorized=True",
                 jwt_payload.sub
             )
                 .fetch_optional(&mut db)
@@ -48,6 +48,7 @@ impl User {
         }
 
         eprintln!("JWT Payload: {:?}", jwt_payload);
+        let now = Utc::now();
 
         /*
         * Upsert and return the user
@@ -62,17 +63,21 @@ impl User {
                     created_at,
                     last_logged_in_at
                 )
-                VALUES ($1, $2, $3, $4, $4)
+                VALUES (?, ?, ?, ?, ?)
                 ON CONFLICT (firebase_uid) DO UPDATE SET
-                    email = $2,
-                    email_verified = $3,
-                    last_logged_in_at = $4
+                    email = ?,
+                    email_verified = ?,
+                    last_logged_in_at = ?
                 RETURNING *
             ",
             jwt_payload.sub,
             jwt_payload.email,
             jwt_payload.email_verified,
-            Utc::now()
+            now.clone(),
+            now.clone(),
+            jwt_payload.email,
+            jwt_payload.email_verified,
+            now.clone()
         )
             .fetch_one(&mut db)
             .await
