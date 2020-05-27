@@ -1,5 +1,5 @@
 CREATE TABLE invites (
-    id SERIAL PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     public_key TEXT UNIQUE NOT NULL,
     private_key TEXT,
     is_admin BOOLEAN NOT NULL DEFAULT False,

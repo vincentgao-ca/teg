@@ -28,7 +28,7 @@ pub async fn consume_invite(context: &Context) -> FieldResult<User> {
         User,
         "
             SELECT * FROM users
-            WHERE id=$1
+            WHERE id=?
         ",
         user_id
     )
@@ -36,25 +36,24 @@ pub async fn consume_invite(context: &Context) -> FieldResult<User> {
         .await?;
 
     // Authorize the user
-    let user = sqlx::query_as!(
+    sqlx::query_as!(
         User,
         "
             UPDATE users
             SET
                 is_authorized=True,
-                is_admin=$2
-            WHERE id=$1
-            RETURNING *
+                is_admin=?
+            WHERE id=?
         ",
-        user_id,
-        user.is_admin || invite.is_admin
+        user.is_admin || invite.is_admin,
+        user_id
     )
-        .fetch_one(&mut tx)
+        .fetch_scalar(&mut tx)
         .await?;
 
     // Delete the invite
     sqlx::query!(
-        "DELETE FROM invites WHERE public_key=$1",
+        "DELETE FROM invites WHERE public_key=?",
         &invite_public_key
     )
         .execute(&mut tx)

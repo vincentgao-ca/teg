@@ -1,5 +1,5 @@
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     firebase_uid TEXT UNIQUE NOT NULL,
     email TEXT,
     email_verified BOOLEAN NOT NULL DEFAULT FALSE,
